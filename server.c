@@ -14,6 +14,7 @@ int main(int argc, char * argv[])
 
    char server_msg[256] = "You have reached the server!\n";
 
+   // Create server socket
    int server_socket;
    server_socket = socket(AF_INET, SOCK_STREAM, 0);
    if(server_socket == -1){
@@ -26,21 +27,26 @@ int main(int argc, char * argv[])
     exit(-1);
    }
 
+   // Specify address and port for the socket
    struct sockaddr_in server_address;
    server_address.sin_family = AF_INET;
    server_address.sin_port = htons(atoi(argv[1]));
    server_address.sin_addr.s_addr = INADDR_ANY;
 
+   // Bind the server to address 
     bind(server_socket, (struct sockaddr*) &server_address,sizeof(server_address));
 
+    // Start listener on the socket to listen for connections
     listen(server_socket, 5);
 
+    // Accept client connection 
     int client_socket;
-
     client_socket = accept(server_socket, NULL, NULL);
 
+    // Send data to the client
     send(client_socket, server_msg, sizeof(server_msg), 0);
 
+    //close the connection
     close(server_socket);
 
 	return 0;
