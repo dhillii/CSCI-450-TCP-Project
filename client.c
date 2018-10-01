@@ -6,7 +6,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
-int main()
+int main(int argc, char * argv[])
 {
     // Create a socket
     int client_socket;

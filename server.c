@@ -12,13 +12,18 @@
 int main(int argc, char * argv[])
 {
 
-   char server_msg[256] = "You have reached the server!";
+   char server_msg[256] = "You have reached the server!\n";
 
    int server_socket;
    server_socket = socket(AF_INET, SOCK_STREAM, 0);
    if(server_socket == -1){
-       printf("ERROR: Socket creation failed!");
+       printf("ERROR: Socket creation failed!\n");
        exit(-1);
+   }
+
+   if(argc <= 1){
+    printf("ERROR: No listener port specified.\n");
+    exit(-1);
    }
 
    struct sockaddr_in server_address;
