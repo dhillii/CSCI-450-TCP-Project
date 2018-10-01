@@ -1,5 +1,5 @@
 tcpprojectmake: server.c client.c
-	gcc -o tcpserver server.c
+	gcc -pthread -o tcpserver server.c
 	gcc -o tcpclient client.c
 
 .PHONY: runserver
