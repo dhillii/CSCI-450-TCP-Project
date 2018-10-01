@@ -13,7 +13,7 @@ int main()
     
     client_socket = socket(AF_INET, SOCK_STREAM, 0);
     if(client_socket == -1){
-        printf("ERROR: Socket creation failed!");
+        printf("ERROR: Socket creation failed!\n");
         exit(-1);
     }
 
@@ -27,7 +27,7 @@ int main()
     int conn_status = connect(client_socket, (struct sockaddr*)&server_address, sizeof(server_address));
 
     if(conn_status == -1){
-        printf("ERROR: socket connection failed!");
+        printf("ERROR: socket connection failed!\n");
         exit(-1);
     }
 
@@ -37,7 +37,6 @@ int main()
     printf("Data Rx: %s\n", buff);
 
     close(client_socket);
-
 
     return 0;
 

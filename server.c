@@ -9,8 +9,9 @@
 #include <arpa/inet.h>
 
 
-int main()
+int main(int argc, char * argv[])
 {
+
    char server_msg[256] = "You have reached the server!";
 
    int server_socket;
@@ -22,7 +23,7 @@ int main()
 
    struct sockaddr_in server_address;
    server_address.sin_family = AF_INET;
-   server_address.sin_port = htons(9002);
+   server_address.sin_port = htons(atoi(argv[1]));
    server_address.sin_addr.s_addr = INADDR_ANY;
 
     bind(server_socket, (struct sockaddr*) &server_address,sizeof(server_address));
