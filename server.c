@@ -40,14 +40,19 @@ int main(int argc, char * argv[])
     listen(server_socket, 5);
 
     // Accept client connection 
-    int client_socket;
-    client_socket = accept(server_socket, NULL, NULL);
 
-    // Send data to the client
-    send(client_socket, server_msg, sizeof(server_msg), 0);
+    while(1){
 
-    //close the connection
-    close(server_socket);
+      int client_socket;
+      client_socket = accept(server_socket, NULL, NULL);
+
+      // Send data to the client
+      send(client_socket, server_msg, sizeof(server_msg), 0);
+
+      //close the connection
+      close(client_socket);
+    }
+    
 
 	return 0;
 }
