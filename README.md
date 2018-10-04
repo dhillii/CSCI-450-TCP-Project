@@ -81,4 +81,10 @@ only
 
 ## Refrences
 
+Base code refrence:
+
+http://armi.in/wiki/FTP_Server_and_Client_Implementation_in_C/C%2B%2B
+
+https://www.cs.utah.edu/~swalton/listings/sockets/programs/part2/chap6/simple-server.c
+
 
