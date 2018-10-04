@@ -8,49 +8,71 @@
 
 ### Prerequisites
 
+To run this project it is suggested that you compile and run on a Linux based operating system.
 
+
+The GCC compiler must also be installed as a prerequisite.
 
 ```
-Give examples
+$ sudo apt-get update
+$ sudo apt-get upgrade
+$ sudo apt-get install build-essential
 ```
 
 ### Compiling
 
-A step by step series of examples that tell you how to get a development env running
-
-Say what the step will be
+To compile this project open up your linux terminal and change your directory to the project directory.
 
 ```
-Give the example
+$ cd /path/to/project/CSCI-450-TCP-Project
 ```
 
-And repeat
+Run the make script to compile both the server and client code.
 
 ```
-until finished
+$ make
 ```
 
-End with an example of getting some data out of the system or using it for a little demo
+## Running
 
-## Running the tests
-
-Explain how to run the automated tests for this system
-
-### Break down into end to end tests
-
-Explain what these tests test and why
+To run the client application:
 
 ```
-Give an example
+$ ./tcpclient.out <server_IP> <server_port> <file_path> <to_format> <to_name>
 ```
 
-### And coding style tests
-
-Explain what these tests test and why
+To run the server application:
 
 ```
-Give an example
+$ ./tcpserver <listen_port>
 ```
+
+## Test Cases
+
+* The file given in the command to run client does not exist
+* The file given in the command to run client is empty
+* The format given in the command to run client is out of range
+* The file from client has only type 0 units and the "to format" is 0.
+* The file from client has only type 0 units and the "to format" is 1.
+* The file from client has only type 0 units and the "to format" is 2.
+* The file from client has only type 0 units and the "to format" is 3.
+* The file from client has only type 1 units and the "to format" is 0.
+* The file from client has only type 1 units and the "to format" is 1.
+* The file from client has only type 1 units and the "to format" is 2.
+* The file from client has only type 1 units and the "to format" is 3.
+* The file from client has both type 0 and type 1 units and the "to format" is 0.
+* The file from client has both type 0 and type 1 units and the "to format" is 1.
+* The file from client has both type 0 and type 1 units and the "to format" is 2.
+* The file from client has both type 0 and type 1 units and the "to format" is 3.
+* The file from client has only type 0 units but have errors
+* The file from client has only type 1 units but have errors
+* The file from client has both type 0 and type 1 units and have errors in type 0 units
+only
+* The file from client has both type 0 and type 1 units and have errors in type 1 units
+only
+* Two clients send files to the server one by one
+* Ten clients send files to the server one by one
+
 
 
 ## Authors
@@ -59,10 +81,4 @@ Give an example
 
 ## Refrences
 
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
 
-## Acknowledgments
-
-* Hat tip to anyone whose code was used
-* Inspiration
-* etc
