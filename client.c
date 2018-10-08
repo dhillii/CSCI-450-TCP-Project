@@ -5,11 +5,21 @@
 #include <sys/types.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include <fcntl.h>
+#include <unistd.h> // for close
+
+//for sendfile()
+#include<sys/sendfile.h>
+
+//for getting file size using stat()
+#include<sys/stat.h>
+
+#define SIZE 256
 
 int main(int argc, char * argv[])
 {
     if(argc < 6){
-        printf("ERROR: Missing arguments.\n");
+        printf("[ERR] Missing arguments.\n");
         exit(-2);
     }
 
@@ -24,7 +34,7 @@ int main(int argc, char * argv[])
     
     client_socket = socket(AF_INET, SOCK_STREAM, 0);
     if(client_socket == -1){
-        printf("ERROR: Socket creation failed!\n");
+        printf("[ERR] Socket creation failed!\n");
         exit(-1);
     }
 
@@ -38,15 +48,45 @@ int main(int argc, char * argv[])
     int conn_status = connect(client_socket, (struct sockaddr*)&server_address, sizeof(server_address));
 
     if(conn_status == -1){
-        printf("ERROR: socket connection failed!\n");
+        printf("[ERR] socket connection failed!\n");
         exit(-1);
     }
 
-    // Receive data from server
+
+    char message[256];
+
+    FILE * input_file = fopen(file_path, "r");
+
+    if(input_file == NULL){
+        printf("[ERR] File not found.\n");
+        exit(1);
+    }
+
+    fscanf(input_file,"%s",message);
+    write(client_socket, message, SIZE);
+
+
+    bzero(message, SIZE);
+    int block_size;
+
+    while((block_size = fread(message, sizeof(char), SIZE, input_file)) > 0){
+
+        if(send(client_socket, message, block_size, 0) < 0){
+
+                fprintf(stderr, "[ERR] Failed to send file.\n");
+                break;
+            }
+
+            bzero(message, SIZE);
+    }
+    printf("[OK] File %s from Client was Sent!\n", file_path);
+
+    /* Receive data from server
     char buff[1024];
     recv(client_socket, &buff, sizeof(buff), 0);
 
     printf("Data Rx: %s\n", buff);
+    */
 
     // Close the connection socket
     close(client_socket);
