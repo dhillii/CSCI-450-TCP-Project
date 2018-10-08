@@ -65,9 +65,14 @@ while(1){
 
   char incoming_buff[256];
 
-  recv(client_socket, incoming_buff, 256, 0);
+  if (recv(client_socket, incoming_buff, 256, 0) == -1){
+    printf("[ERR] Could not read from client socket.\n");
+    exit(1); 
+  }
 
   printf("[SUCCESS] Data Received!\n");
+
+  printf("%s", incoming_buff);
 
   //close the connection
   close(client_socket);
