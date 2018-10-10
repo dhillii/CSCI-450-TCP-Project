@@ -57,20 +57,24 @@ int main(int argc, char * argv[])
     printf("[STAT] Connected!\n");
 
 
-    
+    char client_msg[256];
 
     FILE * input_file = fopen(file_path, "r");
 
+    fread(client_msg, 256, 1, input_file);
+
     //Receive data from server
-    char buff[1024];
+    //char buff[1024];
+    //recv(client_socket, &buff, sizeof(buff), 0);
 
-    recv(client_socket, &buff, sizeof(buff), 0);
+    //printf("Data Rx: %s\n", buff);
 
-    printf("Data Rx: %s\n", buff);
+    //char msg[256] = "Hey I am a Client!\n";
 
-    char client_msg[256] = "Hey I am a Client!\n";
-
-    send(client_socket, client_msg, sizeof(client_msg), 0);
+    if (send(client_socket, client_msg, sizeof(client_msg), 0) < 0){
+        printf("[ERR] Error sending message to server at address %s", server_ip);
+        exit(1);
+    }
     
 
     // Close the connection socket

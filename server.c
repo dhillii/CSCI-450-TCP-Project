@@ -62,10 +62,10 @@ while(1){
   client_socket = accept(server_socket, NULL, NULL);
 
   // Send data to the client
-  send(client_socket, server_msg, sizeof(server_msg), 0);
+  //send(client_socket, server_msg, sizeof(server_msg), 0);
 
 
-  char buff[1024];
+  char buff[256];
 
   recv(client_socket, &buff, sizeof(buff), 0);
 
