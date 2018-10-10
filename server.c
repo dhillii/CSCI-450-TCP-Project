@@ -48,38 +48,34 @@ listen(server_socket, 5);
 
 // Accept client connection 
 
+ // Bind the server to address 
+bind(server_socket, (struct sockaddr*) &server_address,sizeof(server_address));
+
+// Start listener on the socket to listen for connections
+listen(server_socket, 5);
+
+// Accept client connection 
+
 while(1){
 
   int client_socket;
-  if(client_socket = accept(server_socket, NULL, NULL) == -1){
-
-    printf("[ERR] Could not obtain new Socket Descriptor.\n");
-    exit(1);   
-
-  }
-
-  printf("[OK] Client Accepted...\n");
+  client_socket = accept(server_socket, NULL, NULL);
 
   // Send data to the client
-  //send(client_socket, server_msg, sizeof(server_msg), 0);
+  send(client_socket, server_msg, sizeof(server_msg), 0);
 
-  char incoming_buff[256];
 
-  if (recv(client_socket, incoming_buff, 256, 0) == -1){
-    printf("[ERR] Could not read from client socket.\n");
-    exit(1); 
-  }
+  char buff[1024];
 
-  printf("[SUCCESS] Data Received!\n");
+  recv(client_socket, &buff, sizeof(buff), 0);
 
-  printf("%s", incoming_buff);
+  printf("Data Rx: %s", buff);
 
   //close the connection
   close(client_socket);
 }
 
-close(server_socket);
+
 return 0;
 }
-
 

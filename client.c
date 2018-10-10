@@ -44,6 +44,8 @@ int main(int argc, char * argv[])
     server_address.sin_port = htons(atoi(argv[2]));
     server_address.sin_addr.s_addr = INADDR_ANY;
 
+    printf("[STAT] Connecting to server at address %s...\n", server_ip);
+
     // Connect client socket to server with specified address
     int conn_status = connect(client_socket, (struct sockaddr*)&server_address, sizeof(server_address));
 
@@ -52,41 +54,24 @@ int main(int argc, char * argv[])
         exit(-1);
     }
 
+    printf("[STAT] Connected!\n");
 
-    char message[256];
+
+    
 
     FILE * input_file = fopen(file_path, "r");
 
-    if(input_file == NULL){
-        printf("[ERR] File not found.\n");
-        exit(1);
-    }
-
-    fscanf(input_file,"%s",message);
-    write(client_socket, message, SIZE);
-
-
-    bzero(message, SIZE);
-    int block_size;
-
-    while((block_size = fread(message, sizeof(char), SIZE, input_file)) > 0){
-
-        if(send(client_socket, message, block_size, 0) < 0){
-
-                fprintf(stderr, "[ERR] Failed to send file.\n");
-                break;
-            }
-
-            bzero(message, SIZE);
-    }
-    printf("[OK] File %s from Client was Sent!\n", file_path);
-
-    /* Receive data from server
+    //Receive data from server
     char buff[1024];
+
     recv(client_socket, &buff, sizeof(buff), 0);
 
     printf("Data Rx: %s\n", buff);
-    */
+
+    char client_msg[256] = "Hey I am a Client!\n";
+
+    send(client_socket, client_msg, sizeof(client_msg), 0);
+    
 
     // Close the connection socket
     close(client_socket);
