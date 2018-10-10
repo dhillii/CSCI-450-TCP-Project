@@ -64,12 +64,18 @@ while(1){
   // Send data to the client
   //send(client_socket, server_msg, sizeof(server_msg), 0);
 
+  char to_name[50];
+  recv(client_socket, &to_name, sizeof(to_name), 0);
+
+  printf("Data Rx: %s\n", to_name);
+
+
 
   char buff[256];
 
   recv(client_socket, &buff, sizeof(buff), 0);
 
-  printf("Data Rx: %s", buff);
+  printf("Data Rx: %s\n", buff);
 
   //close the connection
   close(client_socket);

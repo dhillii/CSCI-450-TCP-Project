@@ -71,10 +71,17 @@ int main(int argc, char * argv[])
 
     //char msg[256] = "Hey I am a Client!\n";
 
-    if (send(client_socket, client_msg, sizeof(client_msg), 0) < 0){
-        printf("[ERR] Error sending message to server at address %s", server_ip);
+    if (send(client_socket, to_name, sizeof(to_name), 0) < 0){
+        printf("[ERR] Error sending message to server at address %s\n", server_ip);
         exit(1);
     }
+
+    if (send(client_socket, client_msg, sizeof(client_msg), 0) < 0){
+        printf("[ERR] Error sending message to server at address %s\n", server_ip);
+        exit(1);
+    }
+
+    printf("[STAT] Data was sent successfully!\n");
     
 
     // Close the connection socket
