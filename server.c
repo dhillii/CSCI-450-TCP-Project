@@ -11,6 +11,12 @@
 #include <fcntl.h>
 #include <unistd.h> // for close
 
+void translateUnits(char data[],int option);
+
+void translate_0_1(char data[]);
+
+void translate_1_0(char data[]);
+
 
 int main(int argc, char * argv[]){
 
@@ -64,11 +70,16 @@ while(1){
   // Send data to the client
   //send(client_socket, server_msg, sizeof(server_msg), 0);
 
+  int file_size[1];
+  recv(client_socket, &file_size, sizeof(file_size), 0);
+
+  printf("Data Rx: %lu\n", file_size);
+
+
   char to_name[50];
   recv(client_socket, &to_name, sizeof(to_name), 0);
 
   printf("Data Rx: %s\n", to_name);
-
 
 
   char buff[256];

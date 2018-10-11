@@ -44,7 +44,7 @@ int main(int argc, char * argv[])
     server_address.sin_port = htons(atoi(argv[2]));
     server_address.sin_addr.s_addr = INADDR_ANY;
 
-    printf("[STAT] Connecting to server at address %s...\n", server_ip);
+    printf("[OK] Connecting to server at address %s...\n", server_ip);
 
     // Connect client socket to server with specified address
     int conn_status = connect(client_socket, (struct sockaddr*)&server_address, sizeof(server_address));
@@ -54,22 +54,29 @@ int main(int argc, char * argv[])
         exit(-1);
     }
 
-    printf("[STAT] Connected!\n");
+    printf("[OK] Connected!\n");
 
 
     char client_msg[256];
 
     FILE * input_file = fopen(file_path, "r");
 
+    //Gets file length and sets seek pointer back to the beginning.
+    int file_length;
+    fseek(input_file, 0, SEEK_END);         
+    file_length = ftell(input_file);
+    fseek(input_file, 0, SEEK_SET);
+
+    char f_length_buff[1];
+
+    f_length_buff[1] = file_length;
+
     fread(client_msg, 256, 1, input_file);
 
-    //Receive data from server
-    //char buff[1024];
-    //recv(client_socket, &buff, sizeof(buff), 0);
-
-    //printf("Data Rx: %s\n", buff);
-
-    //char msg[256] = "Hey I am a Client!\n";
+    if (send(client_socket, f_length_buff, sizeof(f_length_buff), 0) < 0){
+        printf("[ERR] Error sending message to server at address %s\n", server_ip);
+        exit(1);
+    }
 
     if (send(client_socket, to_name, sizeof(to_name), 0) < 0){
         printf("[ERR] Error sending message to server at address %s\n", server_ip);
@@ -81,7 +88,8 @@ int main(int argc, char * argv[])
         exit(1);
     }
 
-    printf("[STAT] Data was sent successfully!\n");
+
+    printf("[OK] Data was sent successfully!\n");
     
 
     // Close the connection socket
