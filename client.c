@@ -5,6 +5,7 @@
 #include <sys/types.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+
 #include <fcntl.h>
 #include <unistd.h> // for close
 
@@ -62,23 +63,22 @@ int main(int argc, char * argv[])
     FILE * input_file = fopen(file_path, "r");
 
     //Gets file length and sets seek pointer back to the beginning.
-    int file_length;
+    size_t file_length;
     fseek(input_file, 0, SEEK_END);         
     file_length = ftell(input_file);
     fseek(input_file, 0, SEEK_SET);
 
-    char f_length_buff[1];
 
-    f_length_buff[1] = file_length;
-
-    fread(client_msg, 256, 1, input_file);
-
-    if (send(client_socket, f_length_buff, sizeof(f_length_buff), 0) < 0){
+    //Send the server the desired file output name
+    if (send(client_socket, to_name, sizeof(to_name), 0) < 0){
         printf("[ERR] Error sending message to server at address %s\n", server_ip);
         exit(1);
     }
 
-    if (send(client_socket, to_name, sizeof(to_name), 0) < 0){
+    fread(client_msg, 256, 1, input_file);
+
+    //Send the file size in bytes to the server so it knows how many to read.
+    if (send(client_socket, &file_length, sizeof(size_t), 0) < 0){
         printf("[ERR] Error sending message to server at address %s\n", server_ip);
         exit(1);
     }

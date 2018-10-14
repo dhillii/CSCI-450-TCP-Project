@@ -1,5 +1,3 @@
-
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -11,7 +9,7 @@
 #include <fcntl.h>
 #include <unistd.h> // for close
 
-void translateUnits(char data[],int option);
+void translateUnits(char data[],int option, char to_name[]);
 
 void translate_0_1(char data[]);
 
@@ -70,16 +68,18 @@ while(1){
   // Send data to the client
   //send(client_socket, server_msg, sizeof(server_msg), 0);
 
-  int file_size[1];
+  char to_name[50];
+  recv(client_socket, &to_name, sizeof(to_name), 0);
+
+  printf("Data Rx: %s\n", to_name);
+
+  size_t file_size;
   recv(client_socket, &file_size, sizeof(file_size), 0);
 
   printf("Data Rx: %lu\n", file_size);
 
 
-  char to_name[50];
-  recv(client_socket, &to_name, sizeof(to_name), 0);
-
-  printf("Data Rx: %s\n", to_name);
+  
 
 
   char buff[256];
@@ -88,11 +88,45 @@ while(1){
 
   printf("Data Rx: %s\n", buff);
 
+
+
   //close the connection
   close(client_socket);
 }
 
-
 return 0;
+}
+
+
+
+void translateUnits(char data[], int option, char to_name[]){
+
+  FILE * out_file = fopen(to_name, "w");
+
+  if(out_file == NULL){
+        printf("[ERR] Could not create file.\n");
+        exit(-1);
+  }
+
+  switch(option){
+
+    case 0: 
+      printf("[SUCCESS] Saving file as %s\n", to_name);
+      break;
+
+    case 1:
+      break;
+
+    case 2:
+      break;
+
+    case 3:
+      break;
+
+    default:
+      printf("[ERR] Invalid translation parameter.\n");
+      exit(-1);
+
+  }
 }
 
