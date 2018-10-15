@@ -71,10 +71,10 @@ int main(int argc, char * argv[])
     file_size =ftell (file_to_send);
     rewind(file_to_send);
  
-    sprintf(file_data,"FBEGIN:%s:%d\r\n", to_name, file_size);      //Create packet header with target name
+    sprintf(file_data,"FBEGIN:%s:%d\r\n", to_name, file_size);      //Create header message with target name
                                                                     // and file size
 
-    send(client_socket, file_data, sizeof(file_data), 0);           //Send header data
+    send(client_socket, file_data, sizeof(file_data), 0);           //Send file data
  
 
     //Send file data one byte at a time until end of file
@@ -83,37 +83,6 @@ int main(int argc, char * argv[])
         send(client_socket, send_byte, 1, 0);    
     }
     fclose(file_to_send);
-
-    /*char client_msg[256];
-
-    FILE * input_file = fopen(file_path, "r");
-
-    //Gets file length and sets seek pointer back to the beginning.
-    size_t file_length;
-    fseek(input_file, 0, SEEK_END);         
-    file_length = ftell(input_file);
-    fseek(input_file, 0, SEEK_SET);
-
-
-    //Send the server the desired file output name
-    if (send(client_socket, to_name, sizeof(to_name), 0) < 0){
-        printf("[ERR] Error sending message to server at address %s\n", server_ip);
-        exit(1);
-    }
-
-    fread(client_msg, 256, 1, input_file);
-
-    //Send the file size in bytes to the server so it knows how many to read.
-    if (send(client_socket, &file_length, sizeof(size_t), 0) < 0){
-        printf("[ERR] Error sending message to server at address %s\n", server_ip);
-        exit(1);
-    }
-
-    if (send(client_socket, client_msg, sizeof(client_msg), 0) < 0){
-        printf("[ERR] Error sending message to server at address %s\n", server_ip);
-        exit(1);
-    }*/
-
 
     printf("[OK] Data was sent successfully!\n");
     
