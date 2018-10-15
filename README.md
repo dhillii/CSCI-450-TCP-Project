@@ -49,26 +49,26 @@ $ ./tcpserver <listen_port>
 
 ## Test Cases
 
-[X] The file given in the command to run client does not exist
-* The file given in the command to run client is empty
-* The format given in the command to run client is out of range
-* The file from client has only type 0 units and the "to format" is 0.
-* The file from client has only type 0 units and the "to format" is 1.
-* The file from client has only type 0 units and the "to format" is 2.
-* The file from client has only type 0 units and the "to format" is 3.
-* The file from client has only type 1 units and the "to format" is 0.
-* The file from client has only type 1 units and the "to format" is 1.
-* The file from client has only type 1 units and the "to format" is 2.
-* The file from client has only type 1 units and the "to format" is 3.
-* The file from client has both type 0 and type 1 units and the "to format" is 0.
-* The file from client has both type 0 and type 1 units and the "to format" is 1.
-* The file from client has both type 0 and type 1 units and the "to format" is 2.
-* The file from client has both type 0 and type 1 units and the "to format" is 3.
-* The file from client has only type 0 units but have errors
-* The file from client has only type 1 units but have errors
-* The file from client has both type 0 and type 1 units and have errors in type 0 units
+- [x] The file given in the command to run client does not exist
+- [] The file given in the command to run client is empty
+- [] The format given in the command to run client is out of range
+- [] The file from client has only type 0 units and the "to format" is 0.
+- [] The file from client has only type 0 units and the "to format" is 1.
+- [] The file from client has only type 0 units and the "to format" is 2.
+- [] The file from client has only type 0 units and the "to format" is 3.
+- [] The file from client has only type 1 units and the "to format" is 0.
+- [] The file from client has only type 1 units and the "to format" is 1.
+- []The file from client has only type 1 units and the "to format" is 2.
+- [] The file from client has only type 1 units and the "to format" is 3.
+- [] The file from client has both type 0 and type 1 units and the "to format" is 0.
+- [] The file from client has both type 0 and type 1 units and the "to format" is 1.
+- [] The file from client has both type 0 and type 1 units and the "to format" is 2.
+- []The file from client has both type 0 and type 1 units and the "to format" is 3.
+- [] The file from client has only type 0 units but have errors
+- []The file from client has only type 1 units but have errors
+- []The file from client has both type 0 and type 1 units and have errors in type 0 units
 only
-* The file from client has both type 0 and type 1 units and have errors in type 1 units
+- []The file from client has both type 0 and type 1 units and have errors in type 1 units
 only
 - [x] Two clients send files to the server one by one
 - [x] Ten clients send files to the server one by one
