@@ -1,9 +1,7 @@
-tcpprojectmake: server.c client.c
-	gcc -o tcpserver.out server.c
-	gcc -o tcpclient.out client.c
+tcpprojectmake: Server/server.c Client/client.c
+	gcc -o Server/tcpserver.out Server/server.c
+	gcc -o Client/tcpclient.out Client/client.c
 
-.PHONY: runserver
-.PHONY: runclient
 
 
 
