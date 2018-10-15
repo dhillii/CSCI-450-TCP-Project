@@ -29,10 +29,10 @@ int main(int argc, char * argv[])
 
 
   char *header[4096];
-  char recvBUFF[4096];
+  char recv_buff[4096];
   char *file_name;
   char *file_size;
-  FILE * recvFILE;
+  FILE * recv_file;
   int received = 0;
   char tempstr[4096];
 
@@ -73,28 +73,28 @@ int main(int argc, char * argv[])
     int client_socket;
     client_socket = accept(server_socket, NULL, NULL);
 
-    if( recv(client_socket, recvBUFF, sizeof(recvBUFF), 0) )
+    if( recv(client_socket, recv_buff, sizeof(recv_buff), 0) )
     {
       //If first 6 characters are not "FBEGIN parse arguments to get file name and size"
-      if(!strncmp(recvBUFF,"FBEGIN",6)) {
-        recvBUFF[strlen(recvBUFF) - 2] = 0;
-        parseArguments(header, recvBUFF);
+      if(!strncmp(recv_buff,"FBEGIN",6)) {
+        recv_buff[strlen(recv_buff) - 2] = 0;
+        parseArguments(header, recv_buff);
         file_name = header[1];
         file_size = header[2];
         }
-      recvBUFF[0] = 0;
-      recvFILE = fopen ( file_name,"w" );
+      recv_buff[0] = 0;
+      recv_file = fopen ( file_name,"w" );
 
       while(1){
 
-        if(recv(client_socket, recvBUFF, 1, 0) != 0){
+        if(recv(client_socket, recv_buff, 1, 0) != 0){
 
-          fwrite(recvBUFF, sizeof(recvBUFF[0]), 1, recvFILE);
-          recvBUFF[0] = 0;
+          fwrite(recv_buff, sizeof(recv_buff[0]), 1, recv_file);
+          recv_buff[0] = 0;
         }
         else {
           printf("[OK] File data received from client successfully!\n");
-          fclose(recvFILE);
+          fclose(recv_file);
           close(client_socket);
           break;
         }
