@@ -40,13 +40,19 @@ $ make
 
 To run the client application:
 
+Open a terminal and run the following commands.
+
 ```
+$ cd Client
 $ ./tcpclient.out <server_IP> <server_port> <file_path> <to_format> <to_name>
 ```
 
 To run the server application:
 
+Open another terminal and run the following commands.
+
 ```
+$ cd Server
 $ ./tcpserver <listen_port>
 ```
 
@@ -86,10 +92,12 @@ only
 
 ## Refrences
 
-Base code refrence:
+Refrences:
 
 http://armi.in/wiki/FTP_Server_and_Client_Implementation_in_C/C%2B%2B
 
 https://www.cs.utah.edu/~swalton/listings/sockets/programs/part2/chap6/simple-server.c
+
+ftp://gaia.cs.umass.edu/pub/kurose/ftpserver.c
 
 
