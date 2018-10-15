@@ -9,14 +9,14 @@
 #include <fcntl.h>
 #include <unistd.h> // for close
 
-void translateUnits(char data[],int option, char to_name[]);
+void translateUnits(char * file_name, int option);
 
 void translate_0_1(char data[]);
 
 void translate_1_0(char data[]);
 
 
-int parseARGS(char **args, char *line){
+int parseArguments(char **args, char *line){
   int tmp=0;
   args[tmp] = strtok( line, ":" );
   while ( (args[++tmp] = strtok(NULL, ":" ) ) != NULL );
@@ -30,7 +30,8 @@ int main(int argc, char * argv[])
 
   char *header[4096];
   char recvBUFF[4096];
-  char *filename, *filesize;
+  char *file_name;
+  char *file_size;
   FILE * recvFILE;
   int received = 0;
   char tempstr[4096];
@@ -72,35 +73,33 @@ int main(int argc, char * argv[])
     int client_socket;
     client_socket = accept(server_socket, NULL, NULL);
 
-
-    if( recv(client_socket, recvBUFF, sizeof(recvBUFF), 0) ){
+    if( recv(client_socket, recvBUFF, sizeof(recvBUFF), 0) )
+    {
+      //If first 6 characters are not "FBEGIN parse arguments to get file name and size"
       if(!strncmp(recvBUFF,"FBEGIN",6)) {
         recvBUFF[strlen(recvBUFF) - 2] = 0;
-        parseARGS(header, recvBUFF);
-        filename = header[1];
-        filesize = header[2];
+        parseArguments(header, recvBUFF);
+        file_name = header[1];
+        file_size = header[2];
         }
       recvBUFF[0] = 0;
-      recvFILE = fopen ( filename,"w" );
-      
-      while(1)
-      {
-        if( recv(client_socket, recvBUFF, 1, 0) != 0 ) {
-            fwrite (recvBUFF , sizeof(recvBUFF[0]) , 1 , recvFILE );
+      recvFILE = fopen ( file_name,"w" );
 
-            recvBUFF[0] = 0;
-        } 
+      while(1){
+
+        if(recv(client_socket, recvBUFF, 1, 0) != 0){
+
+          fwrite(recvBUFF, sizeof(recvBUFF[0]), 1, recvFILE);
+          recvBUFF[0] = 0;
+        }
         else {
+          printf("[OK] File data received from client successfully!\n");
+          fclose(recvFILE);
           close(client_socket);
-          return 0;
+          break;
         }
       }
-      close(server_socket);
     } 
-    else {
-      printf("Client dropped connection\n");
-    }
-   
   }
 
   return 0;
@@ -112,16 +111,9 @@ int main(int argc, char * argv[])
 
 
 
+void translateUnits(char * file_name, int option){
 
-
-
-
-
-
-
-void translateUnits(char data[], int option, char to_name[]){
-
-  FILE * out_file = fopen(to_name, "w");
+  FILE * out_file = fopen(file_name, "r+");
 
   if(out_file == NULL){
         printf("[ERR] Could not create file.\n");
@@ -131,7 +123,7 @@ void translateUnits(char data[], int option, char to_name[]){
   switch(option){
 
     case 0: 
-      printf("[SUCCESS] Saving file as %s\n", to_name);
+      printf("[SUCCESS] Saving file as %s\n", file_name);
       break;
 
     case 1:

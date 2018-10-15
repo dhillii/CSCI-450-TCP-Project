@@ -9,8 +9,6 @@
 #include <fcntl.h>
 #include <unistd.h> // for close
 
-//for sendfile()
-#include<sys/sendfile.h>
 
 //for getting file size using stat()
 #include<sys/stat.h>
@@ -59,6 +57,7 @@ int main(int argc, char * argv[])
     char send_byte[1];
     char ch;
 
+    //Attemt to open file
     FILE * file_to_send = fopen(file_path,"r");
 
     if(!file_to_send) {
@@ -72,22 +71,18 @@ int main(int argc, char * argv[])
     file_size =ftell (file_to_send);
     rewind(file_to_send);
  
-    sprintf(file_data,"FBEGIN:%s:%d\r\n", to_name, file_size);
-    send(client_socket, file_data, sizeof(file_data), 0);
+    sprintf(file_data,"FBEGIN:%s:%d\r\n", to_name, file_size);      //Create packet header with target name
+                                                                    // and file size
+
+    send(client_socket, file_data, sizeof(file_data), 0);           //Send header data
  
+
+    //Send file data one byte at a time until end of file
     while((ch=getc(file_to_send))!=EOF){
         send_byte[0] = ch;
         send(client_socket, send_byte, 1, 0);    
     }
     fclose(file_to_send);
-
-
-
-
-
-
-
-
 
     /*char client_msg[256];
 
