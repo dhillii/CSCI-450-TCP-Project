@@ -10,8 +10,11 @@
 
 To run this project it is suggested that you compile and run on a Linux based operating system.
 
+The latest version of Debian 9.9.5 was used to build and run this project.
 
 The GCC compiler must also be installed as a prerequisite.
+
+Follow the steps below on a clean linux install to get the gcc compiler.
 
 ```
 $ sudo apt-get update
@@ -27,7 +30,7 @@ To compile this project open up your linux terminal and change your directory to
 $ cd /path/to/project/CSCI-450-TCP-Project
 ```
 
-Run the make script to compile both the server and client code.
+Run the make command in the terminal to compile both the server and client code.
 
 ```
 $ make
@@ -46,6 +49,8 @@ To run the server application:
 ```
 $ ./tcpserver <listen_port>
 ```
+
+Note: Make sure the <listen_port> and <server_port> parameters have the same port number. The server IP should be localhost "127.0.0.1" if you are running on a local machine.
 
 ## Test Cases
 
