@@ -49,7 +49,7 @@ $ ./tcpserver <listen_port>
 
 ## Test Cases
 
-* The file given in the command to run client does not exist
+[X] The file given in the command to run client does not exist
 * The file given in the command to run client is empty
 * The format given in the command to run client is out of range
 * The file from client has only type 0 units and the "to format" is 0.
@@ -70,8 +70,8 @@ $ ./tcpserver <listen_port>
 only
 * The file from client has both type 0 and type 1 units and have errors in type 1 units
 only
-* Two clients send files to the server one by one
-* Ten clients send files to the server one by one
+[X] Two clients send files to the server one by one
+[X] Ten clients send files to the server one by one
 
 
 
