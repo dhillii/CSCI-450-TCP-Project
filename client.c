@@ -15,8 +15,6 @@
 //for getting file size using stat()
 #include<sys/stat.h>
 
-#define SIZE 256
-
 int main(int argc, char * argv[])
 {
     if(argc < 6){
@@ -57,8 +55,41 @@ int main(int argc, char * argv[])
 
     printf("[OK] Connected!\n");
 
+    char file_data[4096];
+    char send_byte[1];
+    char ch;
 
-    char client_msg[256];
+    FILE * file_to_send = fopen(file_path,"r");
+
+    if(!file_to_send) {
+        printf("[ERR] Could not open file!");
+        close(client_socket);
+        exit(-1);
+    } 
+    
+    long file_size;
+    fseek (file_to_send, 0, SEEK_END);     
+    file_size =ftell (file_to_send);
+    rewind(file_to_send);
+ 
+    sprintf(file_data,"FBEGIN:%s:%d\r\n", to_name, file_size);
+    send(client_socket, file_data, sizeof(file_data), 0);
+ 
+    while((ch=getc(file_to_send))!=EOF){
+        send_byte[0] = ch;
+        send(client_socket, send_byte, 1, 0);    
+    }
+    fclose(file_to_send);
+
+
+
+
+
+
+
+
+
+    /*char client_msg[256];
 
     FILE * input_file = fopen(file_path, "r");
 
@@ -86,7 +117,7 @@ int main(int argc, char * argv[])
     if (send(client_socket, client_msg, sizeof(client_msg), 0) < 0){
         printf("[ERR] Error sending message to server at address %s\n", server_ip);
         exit(1);
-    }
+    }*/
 
 
     printf("[OK] Data was sent successfully!\n");

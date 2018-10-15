@@ -16,86 +16,106 @@ void translate_0_1(char data[]);
 void translate_1_0(char data[]);
 
 
-int main(int argc, char * argv[]){
-
-char server_msg[256] = "You have reached the server!\n";
-
-// Create server socket
-printf("[OK] Creating Server Socket...\n");
-int server_socket;
-server_socket = socket(AF_INET, SOCK_STREAM, 0);
-
-if(server_socket == -1){
-  printf("ERROR: Socket creation failed!\n");
-  exit(-1);
+int parseARGS(char **args, char *line){
+  int tmp=0;
+  args[tmp] = strtok( line, ":" );
+  while ( (args[++tmp] = strtok(NULL, ":" ) ) != NULL );
+  return tmp - 1;
 }
 
-if(argc <= 1){
-  printf("ERROR: No listener port specified.\n");
-  exit(-1);
+
+int main(int argc, char * argv[])
+{
+
+
+  char *header[4096];
+  char recvBUFF[4096];
+  char *filename, *filesize;
+  FILE * recvFILE;
+  int received = 0;
+  char tempstr[4096];
+
+  // Create server socket
+  printf("[OK] Creating Server Socket...\n");
+  int server_socket;
+  server_socket = socket(AF_INET, SOCK_STREAM, 0);
+
+  if(server_socket == -1){
+    printf("ERROR: Socket creation failed!\n");
+    exit(-1);
+  }
+
+  if(argc <= 1){
+    printf("ERROR: No listener port specified.\n");
+    exit(-1);
+  }
+
+  // Specify address and port for the socket
+  struct sockaddr_in server_address;
+  server_address.sin_family = AF_INET;
+  server_address.sin_port = htons(atoi(argv[1]));
+  server_address.sin_addr.s_addr = INADDR_ANY;
+
+  // Bind the server to address 
+  printf("[OK] Binding...\n");
+  bind(server_socket, (struct sockaddr*) &server_address,sizeof(server_address));
+
+
+  // Start listener on the socket to listen for connections
+  printf("[OK] Starting Listener...\n");
+  listen(server_socket, 5);
+
+  // Accept client connection 
+
+  while(1){
+
+    int client_socket;
+    client_socket = accept(server_socket, NULL, NULL);
+
+
+    if( recv(client_socket, recvBUFF, sizeof(recvBUFF), 0) ){
+      if(!strncmp(recvBUFF,"FBEGIN",6)) {
+        recvBUFF[strlen(recvBUFF) - 2] = 0;
+        parseARGS(header, recvBUFF);
+        filename = header[1];
+        filesize = header[2];
+        }
+      recvBUFF[0] = 0;
+      recvFILE = fopen ( filename,"w" );
+      
+      while(1)
+      {
+        if( recv(client_socket, recvBUFF, 1, 0) != 0 ) {
+            fwrite (recvBUFF , sizeof(recvBUFF[0]) , 1 , recvFILE );
+
+            recvBUFF[0] = 0;
+        } 
+        else {
+          close(client_socket);
+          return 0;
+        }
+      }
+      close(server_socket);
+    } 
+    else {
+      printf("Client dropped connection\n");
+    }
+   
+  }
+
+  return 0;
+
 }
 
-// Specify address and port for the socket
-struct sockaddr_in server_address;
-server_address.sin_family = AF_INET;
-server_address.sin_port = htons(atoi(argv[1]));
-server_address.sin_addr.s_addr = INADDR_ANY;
-
-// Bind the server to address 
-printf("[OK] Binding...\n");
-bind(server_socket, (struct sockaddr*) &server_address,sizeof(server_address));
-
-
-// Start listener on the socket to listen for connections
-printf("[OK] Starting Listener...\n");
-listen(server_socket, 5);
-
-// Accept client connection 
-
- // Bind the server to address 
-bind(server_socket, (struct sockaddr*) &server_address,sizeof(server_address));
-
-// Start listener on the socket to listen for connections
-listen(server_socket, 5);
-
-// Accept client connection 
-
-while(1){
-
-  int client_socket;
-  client_socket = accept(server_socket, NULL, NULL);
-
-  // Send data to the client
-  //send(client_socket, server_msg, sizeof(server_msg), 0);
-
-  char to_name[50];
-  recv(client_socket, &to_name, sizeof(to_name), 0);
-
-  printf("Data Rx: %s\n", to_name);
-
-  size_t file_size;
-  recv(client_socket, &file_size, sizeof(file_size), 0);
-
-  printf("Data Rx: %lu\n", file_size);
-
-
-  
-
-
-  char buff[256];
-
-  recv(client_socket, &buff, sizeof(buff), 0);
-
-  printf("Data Rx: %s\n", buff);
 
 
 
-  //close the connection
-  close(client_socket);
-}
 
-return 0;
-}
+
+
+
+
+
 
 
 
@@ -129,4 +149,3 @@ void translateUnits(char data[], int option, char to_name[]){
 
   }
 }
-
