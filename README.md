@@ -70,8 +70,8 @@ $ ./tcpserver <listen_port>
 only
 * The file from client has both type 0 and type 1 units and have errors in type 1 units
 only
-[X] Two clients send files to the server one by one
-[X] Ten clients send files to the server one by one
+-[x] Two clients send files to the server one by one
+-[x] Ten clients send files to the server one by one
 
 
 
