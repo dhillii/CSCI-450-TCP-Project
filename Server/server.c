@@ -15,26 +15,15 @@ void translate_0_1(char data[]);
 
 void translate_1_0(char data[]);
 
-
-int parseArguments(char **args, char *line){
-  int tmp=0;
-  args[tmp] = strtok( line, ":" );
-  while ( (args[++tmp] = strtok(NULL, ":" ) ) != NULL );
-  return tmp - 1;
-}
-
+int parseArguments(char **args, char *line);
 
 int main(int argc, char * argv[])
 {
-
-
   char *header[4096];
   char recv_buff[4096];
   char *file_name;
   char *file_size;
   FILE * recv_file;
-  int received = 0;
-  char tempstr[4096];
 
   // Create server socket
   printf("[OK] Creating Server Socket...\n");
@@ -116,14 +105,14 @@ void translateUnits(char * file_name, int option){
   FILE * out_file = fopen(file_name, "r+");
 
   if(out_file == NULL){
-        printf("[ERR] Could not create file.\n");
+        printf("[ERR] Could not open %s.\n", file_name);
         exit(-1);
   }
 
   switch(option){
 
     case 0: 
-      printf("[SUCCESS] Saving file as %s\n", file_name);
+      printf("[SUCCESS] File saved as: %s\n", file_name);
       break;
 
     case 1:
@@ -140,4 +129,14 @@ void translateUnits(char * file_name, int option){
       exit(-1);
 
   }
+}
+
+
+
+//This function parses arguments sent by the client
+int parseArguments(char **args, char *line){
+  int tmp=0;
+  args[tmp] = strtok( line, ":" );
+  while ( (args[++tmp] = strtok(NULL, ":" ) ) != NULL );
+  return tmp - 1;
 }
