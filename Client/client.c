@@ -85,6 +85,8 @@ int main(int argc, char * argv[])
     fclose(file_to_send);
 
     printf("[OK] Data was sent successfully!\n");
+
+    
     
 
     // Close the connection socket
