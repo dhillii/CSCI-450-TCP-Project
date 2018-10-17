@@ -71,7 +71,7 @@ int main(int argc, char * argv[])
     file_size =ftell (file_to_send);
     rewind(file_to_send);
  
-    sprintf(file_data,"FBEGIN:%s:%d\r\n", to_name, file_size);      //Create header message with target name
+    sprintf(file_data,"FBEGIN:%s:%d:%d\r\n", to_name, file_size, to_format);      //Create header message with target name
                                                                     // and file size
 
     send(client_socket, file_data, sizeof(file_data), 0);           //Send file data
@@ -85,6 +85,7 @@ int main(int argc, char * argv[])
     fclose(file_to_send);
 
     printf("[OK] Data was sent successfully!\n");
+
 
     
     

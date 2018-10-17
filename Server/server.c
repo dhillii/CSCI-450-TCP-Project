@@ -9,7 +9,7 @@
 #include <fcntl.h>
 #include <unistd.h> // for close
 
-void translateUnits(char * file_name, int option);
+void translateUnits(char * file_name, int option, int client_socket);
 
 void translate_0_1(char data[]);
 
@@ -21,8 +21,13 @@ int main(int argc, char * argv[])
 {
   char *header[4096];
   char recv_buff[4096];
-  char *file_name;
-  char *file_size;
+  char file_name[256];
+  char file_size[256];
+  char to_format[256];
+
+  int to_format_num;
+  int file_size_num;
+
   FILE * recv_file;
 
   // Create server socket
@@ -68,14 +73,19 @@ int main(int argc, char * argv[])
       if(!strncmp(recv_buff,"FBEGIN",6)) {
         recv_buff[strlen(recv_buff) - 2] = 0;
         parseArguments(header, recv_buff);
-        file_name = header[1];
-        file_size = header[2];
+        strcpy(file_name, header[1]);
+        strcpy(file_size, header[2]);
+        strcpy(to_format, header[3]);
+        file_size_num = atoi(file_size);
+        to_format_num = atoi(to_format);
         }
       recv_buff[0] = 0;
       recv_file = fopen ( file_name,"w" );
 
       while(1){
-
+        //This works and will not block the server because if recv isn't 0 it will read a byte and then write to a file
+        //recv will be 0 when no data is available to be received from the client. Thus it will close the file and the connection
+        //to the client. Hence, we do not need to know the file size for reading.
         if(recv(client_socket, recv_buff, 1, 0) != 0){
 
           fwrite(recv_buff, sizeof(recv_buff[0]), 1, recv_file);
@@ -88,7 +98,9 @@ int main(int argc, char * argv[])
           break;
         }
       }
-    } 
+
+      translateUnits(file_name, 'A', client_socket);
+    }
   }
 
   return 0;
@@ -96,39 +108,31 @@ int main(int argc, char * argv[])
 }
 
 
-
-
-
-
-void translateUnits(char * file_name, int option){
+void translateUnits(char * file_name, int option, int client_socket){
 
   FILE * out_file = fopen(file_name, "r+");
+  char * stat_message;
 
   if(out_file == NULL){
         printf("[ERR] Could not open %s.\n", file_name);
         exit(-1);
   }
 
-  switch(option){
+  switch(option) {
+      case 0 :
+         printf("Status Message Sent!\n" );
+         break;
+      case 1 :
+      case 2 :
+         printf("Status Message Sent!\n" );
+         break;
+      case 3 :
+         printf("Status Message Sent!\n" );
+         break;
+      default :
+         printf("Status Message Sent\n" );
+   }
 
-    case 0: 
-      printf("[SUCCESS] File saved as: %s\n", file_name);
-      break;
-
-    case 1:
-      break;
-
-    case 2:
-      break;
-
-    case 3:
-      break;
-
-    default:
-      printf("[ERR] Invalid translation parameter.\n");
-      exit(-1);
-
-  }
 }
 
 
