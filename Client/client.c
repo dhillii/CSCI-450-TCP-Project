@@ -86,10 +86,14 @@ int main(int argc, char * argv[])
 
     printf("[OK] Data was sent successfully!\n");
 
+    /*char buff[256];
+    if( recv(client_socket, buff, 256, 0) != 0){
+        printf("Data Rx: %s\n", buff);
+    }*/
 
+    //printf("Data Rx: %s\n", serv_msg);
     
     
-
     // Close the connection socket
     close(client_socket);
 
