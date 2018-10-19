@@ -13,9 +13,9 @@
 
 void translateUnits(char * file_name, int option, int client_socket, int file_size);
 
-void translate_0_1(unsigned char * buffer, int amount_bytes ,FILE * outfile);
+void translate_0_1(unsigned char * buffer, int amount_bytes ,FILE * outfile, int client_socket);
 
-void translate_1_0(unsigned char * buffer, int amount_bytes ,FILE * outfile);
+void translate_1_0(unsigned char * buffer, int amount_bytes ,FILE * outfile, int client_socket);
 
 int parseArguments(char **args, char *line);
 
@@ -117,7 +117,7 @@ int main(int argc, char * argv[])
 void translateUnits(char * file_name, int option, int client_socket, int file_size){
 
   FILE * in_file = fopen(file_name, "r");
-  FILE * out_file = fopen("translated.bin","wb");
+  FILE * out_file = fopen("translated","wb");
 
   unsigned char file_data[file_size];
 
@@ -141,7 +141,8 @@ void translateUnits(char * file_name, int option, int client_socket, int file_si
         break;
 
       case 1 :
-        translate_0_1(file_data, file_size, out_file);
+        translate_0_1(file_data, file_size, out_file, client_socket);
+        fclose(out_file);
         sprintf(stat_message, "[SUCCESS] File saved as %s and type 0 units translated.\n", file_name);
         if (send(client_socket,stat_message, 256, 0) <= 0){
           printf("[ERR] Error sending message! \n");
@@ -185,8 +186,19 @@ int parseArguments(char **args, char *line){
   return tmp - 1;
 }
 
-void translate_0_1(unsigned char * buffer, int amount_bytes ,FILE * outfile){
+void translate_0_1(unsigned char * buffer, int amount_bytes ,FILE * outfile, int client_socket){
 
+    char invalid_format_msg[256] = "[ERR] File format invalid!";
+
+    if(buffer[0] != 1 || buffer[0] != 0){
+
+      if (send(client_socket,invalid_format_msg, 256, 0) <= 0){
+          printf("[ERR] Error sending message! \n");
+          exit(-1);
+        }
+      return;
+
+    }
     for(int i = 0; i<amount_bytes; i++){
 
         if(buffer[i] == 0){
@@ -236,7 +248,9 @@ void translate_0_1(unsigned char * buffer, int amount_bytes ,FILE * outfile){
 
 }
 
-void translate_1_0(unsigned char * buffer, int amount_bytes ,FILE * outfile){
+void translate_1_0(unsigned char * buffer, int amount_bytes ,FILE * outfile, int client_socket){
+
+
 
 }
 
