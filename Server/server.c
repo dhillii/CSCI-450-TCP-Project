@@ -6,20 +6,24 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
+#include <ctype.h>
+
 #include <fcntl.h>
 #include <unistd.h> // for close
 
-void translateUnits(char * file_name, int option, int client_socket);
+void translateUnits(char * file_name, int option, int client_socket, int file_size);
 
-void translate_0_1(char data[]);
+void translate_0_1(unsigned char * buffer, int amount_bytes ,FILE * outfile);
 
-void translate_1_0(char data[]);
+void translate_1_0(unsigned char * buffer, int amount_bytes ,FILE * outfile);
 
 int parseArguments(char **args, char *line);
 
+int numDigits(int num);
+
 int main(int argc, char * argv[])
 {
-  char *header[4096];
+  char * header[4096];
   char recv_buff[4096];
   char file_name[256];
   char file_size[256];
@@ -67,7 +71,7 @@ int main(int argc, char * argv[])
     int client_socket;
     client_socket = accept(server_socket, NULL, NULL);
 
-    if( recv(client_socket, recv_buff, sizeof(recv_buff), 0) )
+    if( recv(client_socket, recv_buff, sizeof(recv_buff), 0) != 0)
     {
       //If first 6 characters are not "FBEGIN parse arguments to get file name and size from header."
       if(!strncmp(recv_buff,"FBEGIN",6)) {
@@ -94,53 +98,158 @@ int main(int argc, char * argv[])
         else {
           printf("[OK] File data received from client successfully!\n");
           fclose(recv_file);
-          close(client_socket);
           break;
         }
-      }
-
-      translateUnits(file_name, 'A', client_socket);
+      } 
     }
+
+    translateUnits(file_name, to_format_num, client_socket, file_size_num);
+
+    close(client_socket);
   }
 
+  
   return 0;
 
 }
 
 
-void translateUnits(char * file_name, int option, int client_socket){
+void translateUnits(char * file_name, int option, int client_socket, int file_size){
 
-  FILE * out_file = fopen(file_name, "r+");
-  char * stat_message;
+  FILE * in_file = fopen(file_name, "r");
+  FILE * out_file = fopen("translated.bin","wb");
 
-  if(out_file == NULL){
+  unsigned char file_data[file_size];
+
+  fread(file_data,file_size,1,in_file);
+
+  char stat_message[256];
+
+  if(in_file == NULL){
         printf("[ERR] Could not open %s.\n", file_name);
         exit(-1);
   }
 
   switch(option) {
       case 0 :
-         printf("Status Message Sent!\n" );
-         break;
+        sprintf(stat_message, "[SUCCESS] File saved as %s and no units translated.\n", file_name);
+        if (send(client_socket, stat_message, 256, 0) <= 0){
+          printf("[ERR] Error sending message! \n");
+          exit(-1);
+        }
+        printf("[OK] Status Message Sent !\n");
+        break;
+
       case 1 :
+        translate_0_1(file_data, file_size, out_file);
+        sprintf(stat_message, "[SUCCESS] File saved as %s and type 0 units translated.\n", file_name);
+        if (send(client_socket,stat_message, 256, 0) <= 0){
+          printf("[ERR] Error sending message! \n");
+          exit(-1);
+        }
+        printf("[OK] Status Message Sent!\n" );
+        break;
+
       case 2 :
-         printf("Status Message Sent!\n" );
-         break;
+        //translate_1_0(in_file);
+        sprintf(stat_message, "[SUCCESS] File saved as %s and type 1 units translated.\n", file_name);
+        if (send(client_socket,stat_message, 256, 0) <= 0){
+          printf("[ERR] Error sending message! \n");
+          exit(-1);
+        }
+        printf("Status Message Sent!\n" );
+        break;
+
       case 3 :
-         printf("Status Message Sent!\n" );
-         break;
+        //translate_0_1(in_file);
+        //translate_1_0(in_file);
+        sprintf(stat_message, "[SUCCESS] File saved as %s and type 1 and 2 units translated.\n", file_name);
+        if (send(client_socket,stat_message, 256, 0) <= 0){
+          printf("[ERR] Error sending message! \n");
+          exit(-1);
+        }
+        printf("Status Message Sent!\n" );
+        break;
       default :
-         printf("Status Message Sent\n" );
+         printf("[ERR] to_format paramater invalid!\n" );
    }
 
 }
 
 
-
-//This function parses arguments sent by the client
+//This function parses arguments sent by the client.
 int parseArguments(char **args, char *line){
   int tmp=0;
   args[tmp] = strtok( line, ":" );
   while ( (args[++tmp] = strtok(NULL, ":" ) ) != NULL );
   return tmp - 1;
+}
+
+void translate_0_1(unsigned char * buffer, int amount_bytes ,FILE * outfile){
+
+    for(int i = 0; i<amount_bytes; i++){
+
+        if(buffer[i] == 0){
+
+            unsigned char type = (unsigned char)1;
+            fwrite(&type, 1, 1, outfile);
+            i+=1;
+
+            unsigned int amount_int = (int)buffer[i];
+            char amount_arr[3];
+
+            int digits = numDigits(amount_int);
+
+            if(digits == 1){
+                amount_arr[0] = '0';
+                amount_arr[1] = '0';
+                amount_arr[2] = (char)amount_int;
+                fwrite(amount_arr, 3, 1, outfile);
+            }
+            else if(digits == 2){
+                amount_arr[0] = '0';
+                char amount_str[2];
+                fwrite(amount_arr, 1, 1, outfile);
+                sprintf(amount_str, "%d", amount_int);
+                fwrite(amount_str, 2, 1, outfile);      
+            }
+            else{
+                char amount_str[3];
+                sprintf(amount_str, "%d", amount_int);
+                fwrite(amount_str, 3, 1, outfile);
+            }
+
+            unsigned int units[amount_int];
+            unsigned char comma = (unsigned char)',';
+
+            for(int j = 0; j < amount_int; j++){
+                units[j] = buffer[i+2] | (buffer[i+1] << 8) ;                  
+                i+=2;
+            }
+
+            fwrite(units, sizeof(units), 1, outfile);
+
+            printf("Amount: %d\n", amount_int);
+            printf("Units Written: %u %u %u\n\n", units[0], units[1], units[2]);
+        }
+    }
+
+}
+
+void translate_1_0(unsigned char * buffer, int amount_bytes ,FILE * outfile){
+
+}
+
+
+
+
+int numDigits(int num){
+    int count = 0;
+    int Number = num;
+    while(Number != 0)
+    {
+        count++;
+        Number /= 10;
+    }
+    return count;
 }
